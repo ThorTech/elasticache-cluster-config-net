@@ -125,7 +125,7 @@ namespace Amazon.ElastiCacheCluster.Helpers
         /// <returns>The buffer containing the bytes representing the command. The command must be terminated by \r\n.</returns>
         /// <remarks>The Nagle algorithm is disabled on the socket to speed things up, so it's recommended to convert a command into a buffer
         /// and use the <see cref="M:Enyim.Caching.Memcached.PooledSocket.Write(IList&lt;ArraySegment&lt;byte&gt;&gt;)"/> to send the command and the additional buffers in one transaction.</remarks>
-        internal unsafe static IList<ArraySegment<byte>> GetCommandBuffer(string value)
+        internal static IList<ArraySegment<byte>> GetCommandBuffer(string value)
         {
             var data = new ArraySegment<byte>(Encoding.ASCII.GetBytes(value));
 
@@ -138,7 +138,7 @@ namespace Amazon.ElastiCacheCluster.Helpers
         /// <param name="value">The command to be converted.</param>
         /// <param name="list">The list to store the buffer in.</param>
         /// <returns>The buffer containing the bytes representing the command. The command must be terminated by \r\n.</returns>
-        internal unsafe static IList<ArraySegment<byte>> GetCommandBuffer(string value, IList<ArraySegment<byte>> list)
+        internal static IList<ArraySegment<byte>> GetCommandBuffer(string value, IList<ArraySegment<byte>> list)
         {
             var data = new ArraySegment<byte>(Encoding.ASCII.GetBytes(value));
 

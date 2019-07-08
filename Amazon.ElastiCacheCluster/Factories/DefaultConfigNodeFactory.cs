@@ -12,21 +12,26 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
+using System.Net;
 using Enyim.Caching.Configuration;
 using Enyim.Caching.Memcached;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Amazon.ElastiCacheCluster.Factories
 {
     internal class DefaultConfigNodeFactory : IConfigNodeFactory
     {
+        readonly ILogger logger;
+        
+        public DefaultConfigNodeFactory(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
         public IMemcachedNode CreateNode(IPEndPoint endpoint, ISocketPoolConfiguration config)
         {
-            return new MemcachedNode(endpoint, config);
+            return new MemcachedNode(endpoint, config, logger);
         }
     }
 }

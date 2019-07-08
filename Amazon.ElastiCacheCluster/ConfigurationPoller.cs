@@ -23,7 +23,7 @@ namespace Amazon.ElastiCacheCluster
     /// <summary>
     /// A poller used to reconfigure the client servers when updates occur to the cluster configuration
     /// </summary>
-    internal class ConfigurationPoller
+    internal class ConfigurationPoller : IDisposable
     {
         private static readonly Enyim.Caching.ILog log = Enyim.Caching.LogManager.GetLogger(typeof(ConfigurationPoller));
 
@@ -43,14 +43,14 @@ namespace Amazon.ElastiCacheCluster
         /// <summary>
         /// Creates a poller for Auto Discovery with the default intervals
         /// </summary>
-        /// <param name="client">The memcached client to update servers for</param>
+        /// <param name="config">The memcached configuration</param>
         public ConfigurationPoller(ElastiCacheClusterConfig config)
             : this(config, DEFAULT_INTERVAL_DELAY) { }
 
         /// <summary>
         /// Creates a poller for Auto Discovery with the defined itnerval, delay, tries, and try delay for polling
         /// </summary>
-        /// <param name="client">The memcached client to update servers for</param>
+        /// <param name="config">The memcached configuration</param>
         /// <param name="intervalDelay">The amount of time between polling operations in miliseconds</param>
         public ConfigurationPoller(ElastiCacheClusterConfig config, int intervalDelay)
         {
@@ -129,6 +129,11 @@ namespace Amazon.ElastiCacheCluster
             log.Debug("Destroying poller thread");
             if (this.timer != null)
                 this.timer.Dispose();
+        }
+
+        public void Dispose()
+        {
+            timer?.Dispose();
         }
     }
 }

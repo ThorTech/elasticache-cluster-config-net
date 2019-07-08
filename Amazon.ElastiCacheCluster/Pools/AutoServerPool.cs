@@ -35,7 +35,7 @@ namespace Amazon.ElastiCacheCluster.Pools
 
         private IMemcachedNode[] allNodes;
 
-        private IMemcachedClientConfiguration configuration;
+        private ElastiCacheClusterConfig configuration;
         private IOperationFactory factory;
         internal IMemcachedNodeLocator nodeLocator;
 
@@ -51,7 +51,7 @@ namespace Amazon.ElastiCacheCluster.Pools
         /// </summary>
         /// <param name="configuration">The client configuration using the pool</param>
         /// <param name="opFactory">The factory used to create operations on demand</param>
-        public AutoServerPool(IMemcachedClientConfiguration configuration, IOperationFactory opFactory)
+        public AutoServerPool(ElastiCacheClusterConfig configuration, IOperationFactory opFactory)
         {
             if (configuration == null) throw new ArgumentNullException("socketConfig");
             if (opFactory == null) throw new ArgumentNullException("opFactory");
@@ -68,9 +68,9 @@ namespace Amazon.ElastiCacheCluster.Pools
             catch { }
         }
 
-        protected virtual IMemcachedNode CreateNode(IPEndPoint endpoint)
+        protected virtual IMemcachedNode CreateNode(EndPoint endpoint)
         {
-            return new MemcachedNode(endpoint, this.configuration.SocketPool);
+            return new MemcachedNode(endpoint, this.configuration.SocketPool, this.configuration.Logger);
         }
 
         private void rezCallback(object state)

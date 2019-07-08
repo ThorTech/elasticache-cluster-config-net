@@ -15,6 +15,8 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
+using System.Threading.Tasks;
 using Enyim.Caching.Memcached;
 using Enyim.Caching.Memcached.Protocol;
 using Enyim.Caching.Memcached.Results;
@@ -53,12 +55,17 @@ namespace Amazon.ElastiCacheCluster.Operations
             return result.Pass();
         }
 
+        protected override ValueTask<IOperationResult> ReadResponseAsync(PooledSocket socket)
+        {
+            throw new System.NotImplementedException();
+        }
+
         CacheItem IGetOperation.Result
         {
             get { return this.result; }
         }
 
-        protected override bool ReadResponseAsync(PooledSocket socket, System.Action<bool> next)
+        protected override Task<bool> ReadResponseAsync(PooledSocket socket, System.Action<bool> next)
         {
             throw new System.NotSupportedException();
         }

@@ -8,8 +8,9 @@ pipeline {
     // https://issues.jenkins-ci.org/browse/JENKINS-31225
     HOME="${WORKSPACE}"
     output_dir="${WORKSPACE}/output/build"
+    artifactory_url=getConfig('artifactory_url')
     Version=getVersion()
-    Location="${WORKSPACE}/Amazon.ElasticCacheCluster/Amazon.ElasticCacheCluster.csproj"
+    Location="${WORKSPACE}/Amazon.ElastiCacheCluster/Amazon.ElastiCacheCluster.csproj"
   }
 
   stages {
@@ -36,7 +37,7 @@ pipeline {
         withCredentials([usernameColonPassword(credentialsId: 'artifactory:deployer', variable: 'KEY')]) {
           sh '''
           set +x
-          dotnet nuget push ${output_dir}/*.nupkg -s Artifactory -k ${KEY}
+          dotnet nuget push ${output_dir}/*.nupkg -s ${artifactory_url} -k ${KEY}
           '''
         }
       }

@@ -16,23 +16,20 @@
  * permissions and limitations under the License.
  */
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Configuration;
 using Enyim.Caching.Configuration;
 using Enyim.Caching.Memcached;
 using Amazon.ElastiCacheCluster.Factories;
 
 namespace Amazon.ElastiCacheCluster
 {
-    internal class ConfigurationPropertyAttribute : Attribute
-    {
-        internal ConfigurationPropertyAttribute(string name) { }
-        public bool IsRequired { get; set; }
-        public object DefaultValue { get; set; }
-    }
-
     /// <summary>
     /// A config settings object used to configure the client config
     /// </summary>
-    public class ClusterConfigSettings
+    public class ClusterConfigSettings : ConfigurationSection
     {
         /// <summary>
         /// An object that produces nodes for the Discovery Node, mainly used for testing
@@ -58,11 +55,8 @@ namespace Amazon.ElastiCacheCluster
             if (port <= 0)
                 throw new ArgumentException("Port cannot be less than or equal to zero");
 
-            this.ClusterEndPoint = new Endpoint
-            {
-                HostName = hostname,
-                Port = port
-            };
+            this.ClusterEndPoint.HostName = hostname;
+            this.ClusterEndPoint.Port = port;
         }
 
         #endregion
@@ -73,66 +67,110 @@ namespace Amazon.ElastiCacheCluster
         /// Class containing information about the cluster host and port
         /// </summary>
         [ConfigurationProperty("endpoint", IsRequired = true)]
-        public Endpoint ClusterEndPoint { get; set; }
+        public Endpoint ClusterEndPoint
+        {
+            get { return (Endpoint)base["endpoint"]; }
+            set { base["endpoint"] = value; }
+        }
 
         /// <summary>
         /// Class containing information about the node configuration
         /// </summary>
         [ConfigurationProperty("node", IsRequired = false)]
-        public NodeSettings ClusterNode { get; set; }
+        public NodeSettings ClusterNode
+        {
+            get { return (NodeSettings)base["node"]; }
+            set { base["node"] = value; }
+        }
 
         /// <summary>
         /// Class containing information about the poller configuration
         /// </summary>
         [ConfigurationProperty("poller", IsRequired = false)]
-        public PollerSettings ClusterPoller { get; set; } = new PollerSettings();
+        public PollerSettings ClusterPoller
+        {
+            get { return (PollerSettings)base["poller"]; }
+            set { base["poller"] = value; }
+        }
 
         /// <summary>
         /// Endpoint that contains the hostname and port for auto discovery
         /// </summary>
-        public class Endpoint
+        public class Endpoint : ConfigurationElement
         {
             /// <summary>
             /// The hostname of the cluster containing ".cfg."
             /// </summary>
             [ConfigurationProperty("hostname", IsRequired = true)]
-            public String HostName { get; set; }
+            public String HostName
+            {
+                get
+                {
+                    return (String)this["hostname"];
+                }
+                set
+                {
+                    this["hostname"] = value;
+                }
+            }
 
             /// <summary>
             /// The port of the endpoint
             /// </summary>
             [ConfigurationProperty("port", IsRequired = true)]
-            public int Port { get; set; }
+            public int Port
+            {
+                get
+                {
+                    return (int)this["port"];
+                }
+                set
+                {
+                    this["port"] = value;
+                }
+            }
         }
 
         /// <summary>
         /// Settings used for the discovery node
         /// </summary>
-        public class NodeSettings
+        public class NodeSettings : ConfigurationElement
         {
             /// <summary>
             /// How many tries the node should use to get a config
             /// </summary>
             [ConfigurationProperty("nodeTries", DefaultValue = -1, IsRequired = false)]
-            public int NodeTries { get; set; }
+            public int NodeTries
+            {
+                get { return (int)base["nodeTries"]; }
+                set { base["nodeTries"] = value; }
+            }
 
             /// <summary>
             /// The delay between tries for the config in miliseconds
             /// </summary>
             [ConfigurationProperty("nodeDelay", DefaultValue = -1, IsRequired = false)]
-            public int NodeDelay { get; set; }
+            public int NodeDelay
+            {
+                get { return (int)base["nodeDelay"]; }
+                set { base["nodeDelay"] = value; }
+            }
         }
 
         /// <summary>
         /// Settins used for the configuration poller
         /// </summary>
-        public class PollerSettings
+        public class PollerSettings : ConfigurationElement
         {
             /// <summary>
             /// The delay between polls in miliseconds
             /// </summary>
             [ConfigurationProperty("intervalDelay", DefaultValue = -1, IsRequired = false)]
-            public int IntervalDelay { get; set; } = -1;
+            public int IntervalDelay
+            {
+                get { return (int)base["intervalDelay"]; }
+                set { base["intervalDelay"] = value; }
+            }
         }
 
         #endregion
@@ -143,37 +181,71 @@ namespace Amazon.ElastiCacheCluster
         /// Gets or sets the configuration of the socket pool.
         /// </summary>
         [ConfigurationProperty("socketPool", IsRequired = false)]
-        public ISocketPoolConfiguration SocketPool { get; set; }
+        public SocketPoolElement SocketPool
+        {
+            get { return (SocketPoolElement)base["socketPool"]; }
+            set { base["socketPool"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets the configuration of the authenticator.
         /// </summary>
         [ConfigurationProperty("authentication", IsRequired = false)]
-        public IAuthenticationConfiguration Authentication { get; set; }
+        public AuthenticationElement Authentication
+        {
+            get { return (AuthenticationElement)base["authentication"]; }
+            set { base["authentication"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedNodeLocator"/> which will be used to assign items to Memcached nodes.
         /// </summary>
         [ConfigurationProperty("locator", IsRequired = false)]
-        public Type NodeLocator { get; set; }
+        public ProviderElement<IMemcachedNodeLocator> NodeLocator
+        {
+            get { return (ProviderElement<IMemcachedNodeLocator>)base["locator"]; }
+            set { base["locator"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedKeyTransformer"/> which will be used to convert item keys for Memcached.
         /// </summary>
         [ConfigurationProperty("keyTransformer", IsRequired = false)]
-        public IMemcachedKeyTransformer KeyTransformer { get; set; }
+        public ProviderElement<IMemcachedKeyTransformer> KeyTransformer
+        {
+            get { return (ProviderElement<IMemcachedKeyTransformer>)base["keyTransformer"]; }
+            set { base["keyTransformer"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.ITranscoder"/> which will be used serialzie or deserialize items.
         /// </summary>
         [ConfigurationProperty("transcoder", IsRequired = false)]
-        public ITranscoder Transcoder { get; set; }
+        public ProviderElement<ITranscoder> Transcoder
+        {
+            get { return (ProviderElement<ITranscoder>)base["transcoder"]; }
+            set { base["transcoder"] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IPerformanceMonitor"/> which will be used monitor the performance of the client.
+        /// </summary>
+        [ConfigurationProperty("performanceMonitor", IsRequired = false)]
+        public ProviderElement<IPerformanceMonitor> PerformanceMonitor
+        {
+            get { return (ProviderElement<IPerformanceMonitor>)base["performanceMonitor"]; }
+            set { base["performanceMonitor"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets the type of the communication between client and server.
         /// </summary>
         [ConfigurationProperty("protocol", IsRequired = false, DefaultValue = MemcachedProtocol.Binary)]
-        public MemcachedProtocol Protocol { get; set; }
+        public MemcachedProtocol Protocol
+        {
+            get { return (MemcachedProtocol)base["protocol"]; }
+            set { base["protocol"] = value; }
+        }
 
         #endregion
 

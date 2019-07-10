@@ -32,7 +32,7 @@ namespace Amazon.ElastiCacheCluster
     /// <summary>
     /// A class that manages the discovery of endpoints inside of an ElastiCache cluster
     /// </summary>
-    public class DiscoveryNode : IDisposable
+    public class DiscoveryNode
     {
         #region Static ReadOnlys
 
@@ -146,7 +146,6 @@ namespace Amazon.ElastiCacheCluster
         internal void StartPoller()
         {
             this.config.Pool.UpdateLocator(new List<IPEndPoint>(new IPEndPoint[] { this.EndPoint }));
-            this.poller?.Dispose();
             this.poller = new ConfigurationPoller(this.config);
             this.poller.StartTimer();
         }
@@ -157,7 +156,6 @@ namespace Amazon.ElastiCacheCluster
         /// <param name="intervalDelay">Time between pollings, in miliseconds</param>
         internal void StartPoller(int intervalDelay)
         {
-            this.poller?.Dispose();
             this.poller = new ConfigurationPoller(this.config, intervalDelay);
             this.poller.StartTimer();
         }
@@ -383,7 +381,8 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         public void Dispose()
         {
-            this.poller?.Dispose();
+            if (this.poller != null)
+                this.poller.StopPolling();
         }
     }
 }

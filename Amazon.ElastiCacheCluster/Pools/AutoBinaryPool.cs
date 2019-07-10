@@ -34,20 +34,20 @@ namespace Amazon.ElastiCacheCluster.Pools
     internal class AutoBinaryPool : AutoServerPool
     {
         ISaslAuthenticationProvider authenticationProvider;
-        ElastiCacheClusterConfig configuration;
+        IMemcachedClientConfiguration configuration;
 
-        public AutoBinaryPool(ElastiCacheClusterConfig configuration)
-            : base(configuration, new BinaryOperationFactory(configuration.Logger))
+        public AutoBinaryPool(IMemcachedClientConfiguration configuration)
+            : base(configuration, new BinaryOperationFactory())
         {
             this.authenticationProvider = GetProvider(configuration);
             this.configuration = configuration;
         }
 
-        protected override IMemcachedNode CreateNode(EndPoint endpoint)
+        protected override IMemcachedNode CreateNode(IPEndPoint endpoint)
         {
             if (endpoint == null)
                 throw new ArgumentNullException("endpoint");
-            return new BinaryNode(endpoint, this.configuration.SocketPool, this.authenticationProvider, this.configuration.Logger);
+            return new BinaryNode(endpoint, this.configuration.SocketPool, this.authenticationProvider);
         }
 
         private static ISaslAuthenticationProvider GetProvider(IMemcachedClientConfiguration configuration)

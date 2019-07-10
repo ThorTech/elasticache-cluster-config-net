@@ -31,7 +31,7 @@ namespace Amazon.ElastiCacheCluster
     /// <summary>
     /// Configuration class for auto discovery
     /// </summary>
-    public class ElastiCacheClusterConfig : IMemcachedClientConfiguration
+    public class ElastiCacheClusterConfig : IMemcachedClientConfiguration, IDisposable
     {
         // these are lazy initialized in the getters
         private Type nodeLocator;
@@ -266,5 +266,11 @@ namespace Amazon.ElastiCacheCluster
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            ((IDisposable) Pool)?.Dispose();
+            DiscoveryNode?.Dispose();
+        }
     }
 }

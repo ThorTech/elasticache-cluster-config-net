@@ -23,7 +23,7 @@ namespace Amazon.ElastiCacheCluster
     /// <summary>
     /// A poller used to reconfigure the client servers when updates occur to the cluster configuration
     /// </summary>
-    internal class ConfigurationPoller
+    internal class ConfigurationPoller : IDisposable
     {
         private static readonly Enyim.Caching.ILog log = Enyim.Caching.LogManager.GetLogger(typeof(ConfigurationPoller));
 
@@ -129,6 +129,11 @@ namespace Amazon.ElastiCacheCluster
             log.Debug("Destroying poller thread");
             if (this.timer != null)
                 this.timer.Dispose();
+        }
+
+        public void Dispose()
+        {
+            timer?.Dispose();
         }
     }
 }

@@ -34,9 +34,9 @@ namespace Amazon.ElastiCacheCluster.Pools
     internal class AutoBinaryPool : AutoServerPool
     {
         ISaslAuthenticationProvider authenticationProvider;
-        IMemcachedClientConfiguration configuration;
+        ElastiCacheClusterConfig configuration;
 
-        public AutoBinaryPool(IMemcachedClientConfiguration configuration)
+        public AutoBinaryPool(ElastiCacheClusterConfig configuration)
             : base(configuration, new BinaryOperationFactory())
         {
             this.authenticationProvider = GetProvider(configuration);

@@ -51,7 +51,7 @@ namespace Amazon.ElastiCacheCluster.Pools
         /// </summary>
         /// <param name="configuration">The client configuration using the pool</param>
         /// <param name="opFactory">The factory used to create operations on demand</param>
-        public AutoServerPool(IMemcachedClientConfiguration configuration, IOperationFactory opFactory)
+        public AutoServerPool(ElastiCacheClusterConfig configuration, IOperationFactory opFactory)
         {
             if (configuration == null) throw new ArgumentNullException("socketConfig");
             if (opFactory == null) throw new ArgumentNullException("opFactory");
